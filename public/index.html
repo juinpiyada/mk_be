@@ -40,6 +40,10 @@
     .api-method button:hover {
       background-color: #2563EB;
     }
+    .api-description {
+      font-size: 0.9rem;
+      color: #4B5563;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -58,48 +62,54 @@
     <!-- Users Endpoints -->
     <div class="api-section">
       <h2 class="text-2xl font-bold mb-4">Users Endpoints</h2>
+      
+      <!-- GET /api/users -->
       <div class="api-method">
         <span class="font-semibold">GET /api/users</span>
         <button class="api-button">Test GET</button>
       </div>
-      <div class="api-method">
+      <p class="api-description">Description: Fetch all users</p>
+      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users</span></p>
+
+      <!-- POST /api/users -->
+      <div class="api-method mt-4">
         <span class="font-semibold">POST /api/users</span>
         <button class="api-button">Test POST</button>
       </div>
-      <div class="api-method">
+      <p class="api-description">Description: Create a new user</p>
+      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users</span></p>
+
+      <!-- GET /api/users/{user_id} -->
+      <div class="api-method mt-4">
         <span class="font-semibold">GET /api/users/{user_id}</span>
         <button class="api-button">Test GET</button>
       </div>
-      <div class="api-method">
+      <p class="api-description">Description: Fetch a specific user by user_id</p>
+      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
+
+      <!-- PUT /api/users/{user_id} -->
+      <div class="api-method mt-4">
         <span class="font-semibold">PUT /api/users/{user_id}</span>
         <button class="api-button">Test PUT</button>
       </div>
-      <div class="api-method">
+      <p class="api-description">Description: Update a user by user_id</p>
+      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
+
+      <!-- DELETE /api/users/{user_id} -->
+      <div class="api-method mt-4">
         <span class="font-semibold">DELETE /api/users/{user_id}</span>
         <button class="api-button">Test DELETE</button>
       </div>
+      <p class="api-description">Description: Delete a user by user_id</p>
+      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
+
     </div>
 
-    <!-- Repeat for other API sections like Login, Audit Log, Orders, etc. -->
-    <!-- For example, here is the Login Endpoints Section -->
+    <!-- Login Endpoints (Example) -->
     <div class="api-section">
       <h2 class="text-2xl font-bold mb-4">Login Endpoints</h2>
-      <div class="api-method">
-        <span class="font-semibold">GET /api/login/{user_id}</span>
-        <button class="api-button">Test GET</button>
-      </div>
-      <div class="api-method">
-        <span class="font-semibold">POST /api/login</span>
-        <button class="api-button">Test POST</button>
-      </div>
-      <div class="api-method">
-        <span class="font-semibold">PUT /api/login/{login_id}</span>
-        <button class="api-button">Test PUT</button>
-      </div>
-      <div class="api-method">
-        <span class="font-semibold">DELETE /api/login/{login_id}</span>
-        <button class="api-button">Test DELETE</button>
-      </div>
+      <!-- Add similar structure for Login Endpoints -->
+
     </div>
 
     <!-- Add more sections for other API endpoints -->
