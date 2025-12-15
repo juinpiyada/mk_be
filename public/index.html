@@ -4,67 +4,133 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mamma's Kitchen API Documentation</title>
-  
+
   <!-- Link to Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Swagger UI Styles -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui.css" />
+  <!-- Link to Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
-
-    .swagger-ui {
-      background-color: #f8fafc; /* Light background for Swagger UI */
-      padding: 20px;
+    .api-section {
+      background-color: #f9fafb;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .api-method {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .api-method button {
+      background-color: #1D4ED8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .api-method button:hover {
+      background-color: #2563EB;
     }
   </style>
 </head>
-
-<body class="bg-gray-50">
+<body class="bg-gray-100">
 
   <!-- Navbar Section -->
   <header class="bg-blue-500 text-white p-4">
     <div class="container mx-auto">
-      <h1 class="text-3xl font-bold">Mamma's Kitchen API Documentation</h1>
-      <p class="text-sm mt-1">Explore all the available API endpoints.</p>
+      <h1 class="text-3xl font-semibold">Mamma's Kitchen API Documentation</h1>
+      <p class="text-sm mt-1">Explore and test all the available API endpoints</p>
     </div>
   </header>
 
   <!-- Main Content Section -->
   <div class="container mx-auto mt-10">
-    <div id="swagger-ui"></div>
+
+    <!-- Users Endpoints -->
+    <div class="api-section">
+      <h2 class="text-2xl font-bold mb-4">Users Endpoints</h2>
+      <div class="api-method">
+        <span class="font-semibold">GET /api/users</span>
+        <button class="api-button">Test GET</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">POST /api/users</span>
+        <button class="api-button">Test POST</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">GET /api/users/{user_id}</span>
+        <button class="api-button">Test GET</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">PUT /api/users/{user_id}</span>
+        <button class="api-button">Test PUT</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">DELETE /api/users/{user_id}</span>
+        <button class="api-button">Test DELETE</button>
+      </div>
+    </div>
+
+    <!-- Repeat for other API sections like Login, Audit Log, Orders, etc. -->
+    <!-- For example, here is the Login Endpoints Section -->
+    <div class="api-section">
+      <h2 class="text-2xl font-bold mb-4">Login Endpoints</h2>
+      <div class="api-method">
+        <span class="font-semibold">GET /api/login/{user_id}</span>
+        <button class="api-button">Test GET</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">POST /api/login</span>
+        <button class="api-button">Test POST</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">PUT /api/login/{login_id}</span>
+        <button class="api-button">Test PUT</button>
+      </div>
+      <div class="api-method">
+        <span class="font-semibold">DELETE /api/login/{login_id}</span>
+        <button class="api-button">Test DELETE</button>
+      </div>
+    </div>
+
+    <!-- Add more sections for other API endpoints -->
+    <!-- Orders, Order Actions, Meals, etc. -->
+
   </div>
 
-  <!-- Swagger UI Script -->
-  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
-
+  <!-- JavaScript to handle API testing -->
   <script>
-    window.onload = function() {
-      const ui = SwaggerUIBundle({
-        url: "https://mk-be.vercel.app/swagger-output.json",  // Use the correct path to the Swagger JSON hosted on Vercel
-        dom_id: '#swagger-ui',  // Target element where Swagger UI will be injected
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset
-        ],
-        layout: "BaseLayout",
-        theme: {
-          // Custom Tailwind CSS classes applied to Swagger UI components
-          'topbar': {
-            'backgroundColor': '#1D4ED8', // Blue background color for top bar
-            'color': '#ffffff', // White text color
-          },
-          'swagger-ui': {
-            'backgroundColor': '#ffffff', // White background for Swagger UI
-            'borderRadius': '10px', // Round corners for the Swagger UI box
-          }
-        }
+    // Example function to handle API testing (GET request)
+    function testApi(method, url) {
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => alert(JSON.stringify(data)))
+      .catch(error => alert('Error: ' + error));
+    }
+
+    // Event listeners for each button to call testApi function
+    const apiButtons = document.querySelectorAll('.api-button');
+    apiButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const method = e.target.previousSibling.textContent.split(' ')[0]; // GET, POST, PUT, DELETE
+        const url = e.target.previousSibling.textContent.split(' ')[1]; // API URL
+        testApi(method, url); // Call the API test
       });
-    };
+    });
   </script>
 
 </body>
