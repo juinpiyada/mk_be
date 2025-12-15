@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mamma's Kitchen API Documentation</title>
+  
+  <!-- Link to Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Swagger UI Styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui.css" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+    }
+
+    .swagger-ui {
+      background-color: #f8fafc; /* Light background for Swagger UI */
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+
+  <!-- Navbar Section -->
+  <header class="bg-blue-500 text-white p-4">
+    <div class="container mx-auto">
+      <h1 class="text-3xl font-bold">Mamma's Kitchen API Documentation</h1>
+      <p class="text-sm mt-1">Explore all the available API endpoints.</p>
+    </div>
+  </header>
+
+  <!-- Main Content Section -->
+  <div class="container mx-auto mt-10">
+    <div id="swagger-ui"></div>
+  </div>
+
+  <!-- Swagger UI Script -->
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
+
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "https://mk-be.vercel.app/swagger-output.json",  // Use the correct path to the Swagger JSON hosted on Vercel
+        dom_id: '#swagger-ui',  // Target element where Swagger UI will be injected
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout",
+        theme: {
+          // Custom Tailwind CSS classes applied to Swagger UI components
+          'topbar': {
+            'backgroundColor': '#1D4ED8', // Blue background color for top bar
+            'color': '#ffffff', // White text color
+          },
+          'swagger-ui': {
+            'backgroundColor': '#ffffff', // White background for Swagger UI
+            'borderRadius': '10px', // Round corners for the Swagger UI box
+          }
+        }
+      });
+    };
+  </script>
+
+</body>
+</html>
