@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const swaggerUi = require('swagger-ui-express'); // Swagger UI to serve the docs
+const path = require('path');
 const swaggerDocument = require('./swagger-output.json'); // Correct path to Swagger generated output.json
 
 // Import the database connection
@@ -11,13 +12,13 @@ const db = require('./config/db_conn');
 // Import route files
 const usersRouter = require('./routes/users');
 const loginRouter = require('./routes/login');
-const auditlogRouter = require('./routes/auditlog');  // Add the audit log routes here
-const appOrderItemsRouter = require('./routes/appOrderItems'); // Import appOrderItems routes
-const appOrderActionsRouter = require('./routes/appOrderActions'); // Import appOrderActions routes
-const appOrdersRouter = require('./routes/appOrders'); // Import appOrders routes
-const mealsRouter = require('./routes/meals'); // Import meals routes
-const menuItemsRouter = require('./routes/menuItems'); // Import menuItems routes
-const sustainabilityTagsRouter = require('./routes/sustainabilityTags'); // Import sustainabilityTags routes
+const auditlogRouter = require('./routes/auditlog');
+const appOrderItemsRouter = require('./routes/appOrderItems');
+const appOrderActionsRouter = require('./routes/appOrderActions');
+const appOrdersRouter = require('./routes/appOrders');
+const mealsRouter = require('./routes/meals');
+const menuItemsRouter = require('./routes/menuItems');
+const sustainabilityTagsRouter = require('./routes/sustainabilityTags');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -36,25 +37,25 @@ app.use(express.static('public'));  // This will serve the public/index.html fil
 // Serve Swagger documentation at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   swaggerOptions: {
-    url: 'https://mk-be.vercel.app/swagger-output.json', // Use your deployed Swagger JSON path here
+    url: '/swagger-output.json',  // Serve the Swagger JSON file from the public directory
   }
 }));
 
-// Serve index.html specifically for /api/dj route
-app.get('/api/dj', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');  // Ensure this path points to your public/index.html
+// Serve Swagger JSON from the public folder
+app.get('/swagger-output.json', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'swagger-output.json'));  // Ensure the correct path to swagger-output.json
 });
 
 // Routes for API
-app.use('/api/users', usersRouter);        // Use users routes here
-app.use('/api/login', loginRouter);        // Use login routes here
-app.use('/api/auditlog', auditlogRouter);  // Use audit log routes here
-app.use('/api/order-items', appOrderItemsRouter); // Use appOrderItems routes here
-app.use('/api/order-actions', appOrderActionsRouter); // Use appOrderActions routes here
-app.use('/api/orders', appOrdersRouter); // Use appOrders routes here
-app.use('/api/meals', mealsRouter); // Use meals routes here
-app.use('/api/menu-items', menuItemsRouter); // Use menuItems routes here
-app.use('/api/sustainability-tags', sustainabilityTagsRouter); // Use sustainabilityTags routes here
+app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/auditlog', auditlogRouter);
+app.use('/api/order-items', appOrderItemsRouter);
+app.use('/api/order-actions', appOrderActionsRouter);
+app.use('/api/orders', appOrdersRouter);
+app.use('/api/meals', mealsRouter);
+app.use('/api/menu-items', menuItemsRouter);
+app.use('/api/sustainability-tags', sustainabilityTagsRouter);
 
 // Health check route
 app.get('/', (req, res) => {
