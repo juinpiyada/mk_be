@@ -44,6 +44,18 @@
       font-size: 0.9rem;
       color: #4B5563;
     }
+    .response-container {
+      background-color: #f3f4f6;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #333;
+    }
+    .response-container pre {
+      margin: 0;
+      overflow-x: auto;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -62,11 +74,11 @@
     <!-- Users Endpoints -->
     <div class="api-section">
       <h2 class="text-2xl font-bold mb-4">Users Endpoints</h2>
-      
+
       <!-- GET /api/users -->
       <div class="api-method">
         <span class="font-semibold">GET /api/users</span>
-        <button class="api-button">Test GET</button>
+        <button class="api-button" onclick="testApi('GET', 'https://mk-be.vercel.app/api/users')">Test GET</button>
       </div>
       <p class="api-description">Description: Fetch all users</p>
       <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users</span></p>
@@ -74,7 +86,7 @@
       <!-- POST /api/users -->
       <div class="api-method mt-4">
         <span class="font-semibold">POST /api/users</span>
-        <button class="api-button">Test POST</button>
+        <button class="api-button" onclick="postData()">Test POST</button>
       </div>
       <p class="api-description">Description: Create a new user</p>
       <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users</span></p>
@@ -82,7 +94,7 @@
       <!-- GET /api/users/{user_id} -->
       <div class="api-method mt-4">
         <span class="font-semibold">GET /api/users/{user_id}</span>
-        <button class="api-button">Test GET</button>
+        <button class="api-button" onclick="testApi('GET', 'https://mk-be.vercel.app/api/users/1')">Test GET</button>
       </div>
       <p class="api-description">Description: Fetch a specific user by user_id</p>
       <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
@@ -90,7 +102,7 @@
       <!-- PUT /api/users/{user_id} -->
       <div class="api-method mt-4">
         <span class="font-semibold">PUT /api/users/{user_id}</span>
-        <button class="api-button">Test PUT</button>
+        <button class="api-button" onclick="testApi('PUT', 'https://mk-be.vercel.app/api/users/1')">Test PUT</button>
       </div>
       <p class="api-description">Description: Update a user by user_id</p>
       <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
@@ -98,28 +110,27 @@
       <!-- DELETE /api/users/{user_id} -->
       <div class="api-method mt-4">
         <span class="font-semibold">DELETE /api/users/{user_id}</span>
-        <button class="api-button">Test DELETE</button>
+        <button class="api-button" onclick="testApi('DELETE', 'https://mk-be.vercel.app/api/users/1')">Test DELETE</button>
       </div>
       <p class="api-description">Description: Delete a user by user_id</p>
       <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
 
     </div>
 
-    <!-- Login Endpoints (Example) -->
-    <div class="api-section">
-      <h2 class="text-2xl font-bold mb-4">Login Endpoints</h2>
-      <!-- Add similar structure for Login Endpoints -->
+    <!-- Add more sections for other API endpoints like Login, Audit Log, Orders, etc. -->
+  </div>
 
+  <!-- API Response Display -->
+  <div class="container mx-auto mt-10">
+    <div class="response-container" id="response-container">
+      <p class="font-semibold">API Response:</p>
+      <pre id="response-text"></pre>
     </div>
-
-    <!-- Add more sections for other API endpoints -->
-    <!-- Orders, Order Actions, Meals, etc. -->
-
   </div>
 
   <!-- JavaScript to handle API testing -->
   <script>
-    // Example function to handle API testing (GET request)
+    // Function to handle API testing (GET, PUT, DELETE)
     function testApi(method, url) {
       fetch(url, {
         method: method,
@@ -128,19 +139,38 @@
         },
       })
       .then(response => response.json())
-      .then(data => alert(JSON.stringify(data)))
-      .catch(error => alert('Error: ' + error));
+      .then(data => {
+        document.getElementById('response-text').innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        document.getElementById('response-text').innerText = 'Error: ' + error;
+      });
     }
 
-    // Event listeners for each button to call testApi function
-    const apiButtons = document.querySelectorAll('.api-button');
-    apiButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const method = e.target.previousSibling.textContent.split(' ')[0]; // GET, POST, PUT, DELETE
-        const url = e.target.previousSibling.textContent.split(' ')[1]; // API URL
-        testApi(method, url); // Call the API test
+    // Function for POST requests with example data
+    function postData() {
+      const data = {
+        username: 'newUser',
+        email: 'newuser@example.com',
+        password: 'password123',
+        role: 'admin'
+      };
+      
+      fetch('https://mk-be.vercel.app/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('response-text').innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        document.getElementById('response-text').innerText = 'Error: ' + error;
       });
-    });
+    }
   </script>
 
 </body>
