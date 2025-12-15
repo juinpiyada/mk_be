@@ -36,6 +36,7 @@
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
     .api-method button:hover {
       background-color: #2563EB;
@@ -51,10 +52,33 @@
       border-radius: 8px;
       font-size: 0.9rem;
       color: #333;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 400px;
+      overflow-y: auto;
     }
     .response-container pre {
       margin: 0;
-      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+    .api-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #1D4ED8;
+    }
+    .api-toggle-btn {
+      cursor: pointer;
+      font-size: 1rem;
+      color: #1D4ED8;
+      border: none;
+      background: none;
+    }
+    .api-toggle-btn:hover {
+      text-decoration: underline;
+    }
+    .api-section-collapsed {
+      display: none;
     }
   </style>
 </head>
@@ -69,56 +93,7 @@
   </header>
 
   <!-- Main Content Section -->
-  <div class="container mx-auto mt-10">
-
-    <!-- Users Endpoints -->
-    <div class="api-section">
-      <h2 class="text-2xl font-bold mb-4">Users Endpoints</h2>
-
-      <!-- GET /api/users -->
-      <div class="api-method">
-        <span class="font-semibold">GET /api/users</span>
-        <button class="api-button" onclick="testApi('GET', 'https://mk-be.vercel.app/api/users')">Test GET</button>
-      </div>
-      <p class="api-description">Description: Fetch all users</p>
-      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users</span></p>
-
-      <!-- POST /api/users -->
-      <div class="api-method mt-4">
-        <span class="font-semibold">POST /api/users</span>
-        <button class="api-button" onclick="postData()">Test POST</button>
-      </div>
-      <p class="api-description">Description: Create a new user</p>
-      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users</span></p>
-
-      <!-- GET /api/users/{user_id} -->
-      <div class="api-method mt-4">
-        <span class="font-semibold">GET /api/users/{user_id}</span>
-        <button class="api-button" onclick="testApi('GET', 'https://mk-be.vercel.app/api/users/1')">Test GET</button>
-      </div>
-      <p class="api-description">Description: Fetch a specific user by user_id</p>
-      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
-
-      <!-- PUT /api/users/{user_id} -->
-      <div class="api-method mt-4">
-        <span class="font-semibold">PUT /api/users/{user_id}</span>
-        <button class="api-button" onclick="testApi('PUT', 'https://mk-be.vercel.app/api/users/1')">Test PUT</button>
-      </div>
-      <p class="api-description">Description: Update a user by user_id</p>
-      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
-
-      <!-- DELETE /api/users/{user_id} -->
-      <div class="api-method mt-4">
-        <span class="font-semibold">DELETE /api/users/{user_id}</span>
-        <button class="api-button" onclick="testApi('DELETE', 'https://mk-be.vercel.app/api/users/1')">Test DELETE</button>
-      </div>
-      <p class="api-description">Description: Delete a user by user_id</p>
-      <p class="api-description">URL: <span class="text-blue-500">https://mk-be.vercel.app/api/users/{user_id}</span></p>
-
-    </div>
-
-    <!-- Add more sections for other API endpoints like Login, Audit Log, Orders, etc. -->
-  </div>
+  <div class="container mx-auto mt-10" id="api-docs-container"></div>
 
   <!-- API Response Display -->
   <div class="container mx-auto mt-10">
@@ -130,10 +105,150 @@
 
   <!-- JavaScript to handle API testing -->
   <script>
-    // Function to handle API testing (GET, PUT, DELETE)
+    const apiDocs = {
+      "swagger": "2.0",
+      "info": {
+        "title": "Mamma's Kitchen API",
+        "description": "API documentation for Mamma's Kitchen",
+        "version": "1.0.0"
+      },
+      "host": "mk-be.vercel.app",
+      "basePath": "/",
+      "schemes": ["https"],
+      "paths": {
+        "/api/users/": {
+          "get": {
+            "description": "Fetch all users",
+            "responses": {
+              "200": { "description": "OK" },
+              "500": { "description": "Internal Server Error" }
+            }
+          },
+          "post": {
+            "description": "Create a new user",
+            "parameters": [{
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "example": "any" },
+                  "email": { "example": "any" },
+                  "password": { "example": "any" },
+                  "role": { "example": "any" }
+                }
+              }
+            }],
+            "responses": {
+              "201": { "description": "Created" },
+              "500": { "description": "Internal Server Error" }
+            }
+          }
+        },
+        "/api/users/{user_id}": {
+          "get": {
+            "description": "Fetch a specific user by user_id",
+            "parameters": [
+              { "name": "user_id", "in": "path", "required": true, "type": "string" }
+            ],
+            "responses": {
+              "200": { "description": "OK" },
+              "404": { "description": "Not Found" },
+              "500": { "description": "Internal Server Error" }
+            }
+          },
+          "put": {
+            "description": "Update a user by user_id",
+            "parameters": [
+              { "name": "user_id", "in": "path", "required": true, "type": "string" },
+              { "name": "body", "in": "body", "schema": { "type": "object", "properties": { "username": { "example": "any" }, "email": { "example": "any" }, "password": { "example": "any" }, "role": { "example": "any" } } } }
+            ],
+            "responses": {
+              "200": { "description": "OK" },
+              "404": { "description": "Not Found" },
+              "500": { "description": "Internal Server Error" }
+            }
+          },
+          "delete": {
+            "description": "Delete a user by user_id",
+            "parameters": [
+              { "name": "user_id", "in": "path", "required": true, "type": "string" }
+            ],
+            "responses": {
+              "200": { "description": "OK" },
+              "404": { "description": "Not Found" },
+              "500": { "description": "Internal Server Error" }
+            }
+          }
+        },
+        "/api/login/": {
+          "post": {
+            "description": "Record a login attempt",
+            "parameters": [{
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "example": "any" },
+                  "ip_address": { "example": "any" },
+                  "user_agent": { "example": "any" },
+                  "login_status": { "example": "any" }
+                }
+              }
+            }],
+            "responses": {
+              "201": { "description": "Created" },
+              "500": { "description": "Internal Server Error" }
+            }
+          }
+        }
+      }
+    };
+
+    function generateApiDocs() {
+      const container = document.getElementById('api-docs-container');
+      Object.keys(apiDocs.paths).forEach(path => {
+        const pathData = apiDocs.paths[path];
+        const section = document.createElement('div');
+        section.classList.add('api-section');
+
+        const header = document.createElement('h2');
+        header.classList.add('text-2xl', 'font-bold', 'mb-4');
+        header.innerText = path;
+        section.appendChild(header);
+
+        Object.keys(pathData).forEach(method => {
+          const methodData = pathData[method];
+          const methodDiv = document.createElement('div');
+          methodDiv.classList.add('api-method');
+
+          const methodTitle = document.createElement('span');
+          methodTitle.classList.add('font-semibold');
+          methodTitle.innerText = `${method.toUpperCase()} ${path}`;
+          methodDiv.appendChild(methodTitle);
+
+          const button = document.createElement('button');
+          button.classList.add('api-button');
+          button.innerText = `Test ${method.toUpperCase()}`;
+          button.onclick = () => testApi(method, `https://mk-be.vercel.app${path}`);
+          methodDiv.appendChild(button);
+
+          section.appendChild(methodDiv);
+
+          const description = document.createElement('p');
+          description.classList.add('api-description');
+          description.innerText = methodData.description || 'No description available';
+          section.appendChild(description);
+        });
+
+        container.appendChild(section);
+      });
+    }
+
     function testApi(method, url) {
       fetch(url, {
-        method: method,
+        method: method.toUpperCase(),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -147,30 +262,8 @@
       });
     }
 
-    // Function for POST requests with example data
-    function postData() {
-      const data = {
-        username: 'newUser',
-        email: 'newuser@example.com',
-        password: 'password123',
-        role: 'admin'
-      };
-      
-      fetch('https://mk-be.vercel.app/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('response-text').innerText = JSON.stringify(data, null, 2);
-      })
-      .catch(error => {
-        document.getElementById('response-text').innerText = 'Error: ' + error;
-      });
-    }
+    // Initialize the docs
+    generateApiDocs();
   </script>
 
 </body>
