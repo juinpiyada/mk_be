@@ -1,5 +1,3 @@
-// index.js
-
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -33,7 +31,11 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Serve Swagger documentation at /api-docs
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  swaggerOptions: {
+    url: 'https://mk-be.vercel.app/swagger-output.json', // Use your deployed Swagger JSON path here
+  }
+}));
 
 // Routes
 app.use('/api/users', usersRouter);        // Use users routes here
