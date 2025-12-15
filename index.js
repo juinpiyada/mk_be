@@ -30,6 +30,9 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Serve static files (like index.html) from the "public" directory
+app.use(express.static('public'));  // This will serve the public/index.html file
+
 // Serve Swagger documentation at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   swaggerOptions: {
