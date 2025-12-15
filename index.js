@@ -46,6 +46,11 @@ app.get('/swagger-output.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'swagger-output.json'));  // Ensure the correct path to swagger-output.json
 });
 
+// Serve index.html at /api/leo route
+app.get('/api/leo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Ensure the correct path to index.html
+});
+
 // Routes for API
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
