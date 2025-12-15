@@ -40,7 +40,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   }
 }));
 
-// Routes
+// Serve index.html specifically for /api/dj route
+app.get('/api/dj', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');  // Ensure this path points to your public/index.html
+});
+
+// Routes for API
 app.use('/api/users', usersRouter);        // Use users routes here
 app.use('/api/login', loginRouter);        // Use login routes here
 app.use('/api/auditlog', auditlogRouter);  // Use audit log routes here
