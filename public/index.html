@@ -3,19 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mumma's Kitchen • API Tester</title>
+  <title>Mumma's Kitchen • API Tester (Swagger-Style)</title>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
     /* -------------------------------------------------------
-      THEME TOKENS (Dark is default, Light applied via [data-theme="light"])
+      THEME TOKENS (Dark default, Light via [data-theme="light"])
     -------------------------------------------------------- */
     :root{
       --mk-bg: #0b0d12;
-      --mk-bg2: #0f1220;
-      --mk-card: rgba(18,22,34,.72);
+      --mk-bg2:#0f1220;
+
+      --mk-card: rgba(18,22,34,.74);
       --mk-border: rgba(255,255,255,.10);
       --mk-muted: rgba(255,255,255,.65);
       --mk-text: rgba(255,255,255,.92);
@@ -23,40 +24,50 @@
       --mk-input: rgba(255,255,255,.05);
       --mk-pre: rgba(0,0,0,.35);
 
+      /* Swagger-ish accent (blue) + your orange accent */
+      --mk-swagger: #38bdf8;
       --mk-accent: #ff6a00;
-      --mk-accent2: #ffb347;
+      --mk-accent2:#ffb347;
 
       --mk-shadow: 0 18px 50px rgba(0,0,0,.35);
       --mk-radius: 16px;
+
+      --mk-topbar: color-mix(in srgb, var(--mk-card) 88%, transparent);
     }
 
     [data-theme="light"]{
       --mk-bg: #f6f7fb;
-      --mk-bg2: #ffffff;
-      --mk-card: rgba(255,255,255,.90);
+      --mk-bg2:#ffffff;
+
+      --mk-card: rgba(255,255,255,.94);
       --mk-border: rgba(15,23,42,.12);
       --mk-muted: rgba(15,23,42,.65);
       --mk-text: rgba(15,23,42,.92);
 
-      --mk-input: rgba(15,23,42,.04);
+      --mk-input: rgba(15,23,42,.05);
       --mk-pre: rgba(15,23,42,.04);
 
       --mk-shadow: 0 18px 40px rgba(15,23,42,.08);
+      --mk-topbar: rgba(255,255,255,.80);
     }
 
-    /* -------------------------------------------------------
-      BASE
-    -------------------------------------------------------- */
     body{
       background: linear-gradient(180deg, var(--mk-bg) 0%, var(--mk-bg2) 100%);
       color: var(--mk-text);
       min-height: 100vh;
     }
 
+    /* Topbar (Swagger-like) */
     .mk-nav{
-      background: color-mix(in srgb, var(--mk-card) 88%, transparent);
+      background: var(--mk-topbar);
       border-bottom: 1px solid var(--mk-border);
       backdrop-filter: blur(10px);
+    }
+    .mk-brand-dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(90deg, var(--mk-accent), var(--mk-accent2));
+      box-shadow: 0 10px 24px rgba(255,106,0,.2);
+      display:inline-block;
     }
 
     .mk-card{
@@ -75,6 +86,16 @@
       border-radius: 999px;
       color: var(--mk-muted);
       background: color-mix(in srgb, var(--mk-card) 88%, transparent);
+      white-space: nowrap;
+    }
+
+    .mk-kbd{
+      font-size: 12px;
+      border: 1px solid var(--mk-border);
+      padding: 3px 8px;
+      border-radius: 10px;
+      color: var(--mk-muted);
+      background: color-mix(in srgb, var(--mk-card) 88%, transparent);
     }
 
     .mk-method{
@@ -88,6 +109,7 @@
       align-items:center;
       gap:8px;
       background: color-mix(in srgb, var(--mk-card) 92%, transparent);
+      white-space: nowrap;
     }
     .mk-method.GET{ color:#38bdf8; }
     .mk-method.POST{ color:#22c55e; }
@@ -100,8 +122,14 @@
       color: var(--mk-text) !important;
       border-radius: 12px !important;
     }
-    textarea::placeholder, input::placeholder{ color: color-mix(in srgb, var(--mk-text) 35%, transparent) !important; }
-    .form-label{ color: color-mix(in srgb, var(--mk-text) 78%, transparent); font-weight:800; font-size:13px; }
+    textarea::placeholder, input::placeholder{
+      color: color-mix(in srgb, var(--mk-text) 35%, transparent) !important;
+    }
+    .form-label{
+      color: color-mix(in srgb, var(--mk-text) 78%, transparent);
+      font-weight: 800;
+      font-size: 13px;
+    }
 
     pre{
       margin:0;
@@ -110,7 +138,7 @@
       border: 1px solid var(--mk-border);
       background: var(--mk-pre);
       color: var(--mk-text);
-      max-height: 340px;
+      max-height: 360px;
       overflow:auto;
     }
     code{ color: var(--mk-text); }
@@ -123,7 +151,13 @@
       border-radius: 999px;
       box-shadow: 0 12px 26px rgba(255,106,0,.18);
     }
-
+    .btn-swagger{
+      background: color-mix(in srgb, var(--mk-swagger) 22%, transparent);
+      border: 1px solid color-mix(in srgb, var(--mk-swagger) 35%, transparent);
+      color: var(--mk-text);
+      font-weight: 900;
+      border-radius: 999px;
+    }
     .btn-ghost{
       border: 1px solid var(--mk-border);
       color: var(--mk-text);
@@ -132,27 +166,75 @@
     }
     .btn-ghost:hover{ background: color-mix(in srgb, var(--mk-card) 80%, transparent); }
 
-    /* Sidebar list */
-    .mk-list .list-group-item{
+    /* Sidebar list (Swagger-ish accordion) */
+    .mk-accordion .accordion-item{
+      background: transparent;
+      border: 1px solid var(--mk-border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .mk-accordion .accordion-button{
       background: transparent;
       color: var(--mk-text);
-      border-color: var(--mk-border);
+      border: none;
+      box-shadow: none !important;
+      font-weight: 900;
     }
-    .mk-list .list-group-item:hover{ background: color-mix(in srgb, var(--mk-card) 70%, transparent); }
-    .mk-list .list-group-item.active{
+    .mk-accordion .accordion-button::after{
+      filter: invert(0.65);
+      opacity: .8;
+    }
+    [data-theme="light"] .mk-accordion .accordion-button::after{
+      filter: invert(0.2);
+    }
+    .mk-endpoint-btn{
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--mk-border);
+      background: transparent;
+      color: var(--mk-text);
+      border-radius: 12px;
+      padding: 10px 10px;
+      margin-bottom: 8px;
+      transition: transform .08s ease, background .12s ease;
+    }
+    .mk-endpoint-btn:hover{
+      background: color-mix(in srgb, var(--mk-card) 70%, transparent);
+      transform: translateY(-1px);
+    }
+    .mk-endpoint-btn.active{
       background: linear-gradient(90deg,
-        color-mix(in srgb, var(--mk-accent) 22%, transparent),
-        color-mix(in srgb, var(--mk-accent2) 10%, transparent)
+        color-mix(in srgb, var(--mk-swagger) 18%, transparent),
+        color-mix(in srgb, var(--mk-accent2) 8%, transparent)
       );
-      border-color: color-mix(in srgb, var(--mk-accent) 35%, transparent);
+      border-color: color-mix(in srgb, var(--mk-swagger) 38%, transparent);
     }
 
-    /* Responsive polish */
+    .mk-sidebar{
+      height: calc(100vh - 92px);
+      overflow: auto;
+    }
+
+    /* Main “Swagger panel” spacing */
+    .mk-panel-title{
+      font-weight: 950;
+      letter-spacing: -.3px;
+      font-size: 18px;
+    }
+    .mk-opbar{
+      border: 1px solid var(--mk-border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: color-mix(in srgb, var(--mk-card) 80%, transparent);
+    }
+
     .mk-top-controls{
-      width: min(860px, 62vw);
+      width: min(900px, 66vw);
     }
     @media (max-width: 992px){
       .mk-top-controls{ width: 100%; }
+      .mk-sidebar{ height: auto; }
     }
 
     /* Offcanvas theming */
@@ -161,9 +243,7 @@
       color: var(--mk-text);
       border-left: 1px solid var(--mk-border);
     }
-    .offcanvas-header{
-      border-bottom: 1px solid var(--mk-border);
-    }
+    .offcanvas-header{ border-bottom: 1px solid var(--mk-border); }
 
     /* Toast */
     .mk-toast-wrap{
@@ -176,6 +256,17 @@
       padding: 0 12px;
       width: min(560px, 96vw);
     }
+
+    /* Disable styling for read-only swagger mode */
+    .mk-readonly{
+      opacity: .92;
+    }
+    .mk-readonly input:disabled,
+    .mk-readonly textarea:disabled,
+    .mk-readonly select:disabled{
+      opacity: .75;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -184,32 +275,31 @@
   <nav class="navbar mk-nav sticky-top">
     <div class="container-fluid px-3 px-lg-4">
       <div class="d-flex align-items-center gap-2">
-        <span class="fw-black" style="font-weight:900; letter-spacing:-.4px;">Mumma’s Kitchen</span>
-        <span class="mk-pill">API Tester</span>
+        <span class="mk-brand-dot"></span>
+        <span class="fw-black" style="font-weight:950; letter-spacing:-.4px;">Mumma’s Kitchen</span>
+        <span class="mk-pill">Swagger-Style API Tester</span>
       </div>
 
       <div class="d-flex align-items-center gap-2 mk-top-controls">
         <!-- Mobile: Endpoints button -->
         <button class="btn btn-ghost d-lg-none" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#endpointsCanvas" aria-controls="endpointsCanvas">
-          Endpoints
+          ☰ Endpoints
         </button>
 
+        <!-- Server / Base URL (Swagger-like) -->
         <div class="input-group flex-grow-1">
           <span class="input-group-text"
                 style="background:transparent; border:1px solid var(--mk-border); color:var(--mk-muted); border-radius:12px 0 0 12px;">
-            Base URL
+            Server
           </span>
           <input id="baseUrl" class="form-control" placeholder="https://mk-be.vercel.app" />
           <button id="saveBaseUrl" class="btn btn-ghost" type="button">Save</button>
         </div>
 
-        <button id="pingBtn" class="btn btn-ghost" type="button">Ping /</button>
+        <button id="pingBtn" class="btn btn-ghost" type="button">Ping</button>
 
-        <!-- Theme toggle -->
-        <button id="themeBtn" class="btn btn-ghost" type="button" title="Toggle dark / light">
-          🌙
-        </button>
+        <button id="themeBtn" class="btn btn-ghost" type="button" title="Toggle dark / light">🌙</button>
       </div>
     </div>
   </nav>
@@ -218,20 +308,29 @@
     <div class="row g-3">
       <!-- Desktop Sidebar -->
       <div class="col-lg-4 col-xl-3 d-none d-lg-block">
-        <div class="mk-card p-3" style="height: calc(100vh - 88px); overflow:auto;">
+        <div class="mk-card p-3 mk-sidebar">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div>
-              <div class="fw-bold">Endpoints</div>
-              <div class="mk-muted" style="font-size:13px;">Click to auto-fill method/path/body.</div>
+              <div class="fw-bold">API</div>
+              <div class="mk-muted" style="font-size:13px;">Browse & select operations.</div>
             </div>
-            <button id="clearHistoryDesk" class="btn btn-sm btn-ghost">Clear</button>
+            <div class="d-flex gap-2">
+              <button id="clearHistoryDesk" class="btn btn-sm btn-ghost">Clear</button>
+            </div>
           </div>
 
-          <div id="endpointListDesk" class="list-group mk-list mb-3"></div>
+          <div class="mb-2">
+            <input id="endpointSearchDesk" class="form-control" placeholder="Search endpoints… (ex: /api/users)" />
+            <div class="mk-muted mt-1" style="font-size:12px;">
+              Tip: Press <span class="mk-kbd">/</span> to focus search.
+            </div>
+          </div>
+
+          <div id="endpointAccordionDesk" class="accordion mk-accordion"></div>
 
           <div class="mt-3">
             <div class="fw-bold mb-2">History</div>
-            <div id="historyListDesk" class="list-group mk-list"></div>
+            <div id="historyListDesk" class="d-grid gap-2"></div>
           </div>
         </div>
       </div>
@@ -239,78 +338,100 @@
       <!-- Main -->
       <div class="col-12 col-lg-8 col-xl-9">
         <div class="mk-card p-3 p-lg-4">
-          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-            <div>
-              <div class="fw-bold" style="font-size:18px;">Request Builder</div>
+          <!-- Selected operation header -->
+          <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+            <div class="flex-grow-1">
+              <div class="mk-panel-title">Operation</div>
               <div class="mk-muted" style="font-size:13px;">
-                Tip: If your server mounting differs, just edit the Path and try again.
+                Swagger style: select an operation → click <b>Try it out</b> → <b>Execute</b>.
               </div>
             </div>
 
-            <div class="d-flex gap-2 w-100 w-lg-auto">
-              <button id="sendBtn" class="btn btn-accent px-4 flex-grow-1 flex-lg-grow-0">Send</button>
-              <button id="abortBtn" class="btn btn-ghost px-4 flex-grow-1 flex-lg-grow-0" disabled>Abort</button>
+            <div class="d-flex gap-2 flex-wrap">
+              <button id="tryBtn" class="btn btn-swagger px-3">Try it out</button>
+              <button id="executeBtn" class="btn btn-accent px-4">Execute</button>
+              <button id="abortBtn" class="btn btn-ghost px-4" disabled>Abort</button>
             </div>
           </div>
 
-          <div class="row g-3">
-            <div class="col-12 col-md-3">
-              <label class="form-label">Method</label>
-              <select id="method" class="form-select">
-                <option>GET</option>
-                <option>POST</option>
-                <option>PUT</option>
-                <option>DELETE</option>
-              </select>
-            </div>
+          <hr style="border-color: var(--mk-border); opacity:1;">
 
-            <div class="col-12 col-md-9">
-              <label class="form-label">Path</label>
-              <input id="path" class="form-control" placeholder="/api/users" />
-              <div class="mk-muted mt-1" style="font-size:12px;">
-                Supports <code>:id</code> or <code>{id}</code> placeholders.
+          <!-- Operation bar (method + path like Swagger) -->
+          <div class="mk-opbar">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span id="opMethodBadge" class="mk-method GET">GET</span>
+                <span id="opPathText" style="font-weight:950; font-size:14px;">/</span>
+                <span id="opNameText" class="mk-muted" style="font-size:13px;">(select an endpoint)</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="mk-pill" id="modePill">Mode: Read-only</span>
+                <button id="resetBtn" class="btn btn-sm btn-ghost">Reset</button>
               </div>
             </div>
           </div>
 
-          <!-- Params -->
-          <div class="row g-3 mt-2">
-            <div class="col-12">
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="fw-bold">Path Params</div>
-                <span class="mk-muted" style="font-size:12px;">Auto-detected</span>
+          <!-- Request Builder (Swagger-like sections) -->
+          <div class="mt-3 mk-readonly" id="requestWrap">
+            <div class="row g-3">
+              <div class="col-12 col-md-3">
+                <label class="form-label">Method</label>
+                <select id="method" class="form-select" disabled>
+                  <option>GET</option>
+                  <option>POST</option>
+                  <option>PUT</option>
+                  <option>DELETE</option>
+                </select>
               </div>
-              <div id="pathParams" class="mt-2"></div>
+
+              <div class="col-12 col-md-9">
+                <label class="form-label">Path</label>
+                <input id="path" class="form-control" placeholder="/api/users" disabled />
+                <div class="mk-muted mt-1" style="font-size:12px;">
+                  Supports <code>:id</code> or <code>{id}</code> placeholders.
+                </div>
+              </div>
             </div>
 
-            <div class="col-12 col-lg-6">
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="fw-bold">Query Params</div>
-                <button class="btn btn-sm btn-ghost" id="addQuery">+ Add</button>
+            <!-- Params -->
+            <div class="row g-3 mt-2">
+              <div class="col-12">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="fw-bold">Path Parameters</div>
+                  <span class="mk-muted" style="font-size:12px;">Auto-detected from Path</span>
+                </div>
+                <div id="pathParams" class="mt-2"></div>
               </div>
-              <div id="queryParams" class="mt-2"></div>
+
+              <div class="col-12 col-lg-6">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="fw-bold">Query Parameters</div>
+                  <button class="btn btn-sm btn-ghost" id="addQuery" disabled>+ Add</button>
+                </div>
+                <div id="queryParams" class="mt-2"></div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="fw-bold">Request Headers</div>
+                  <button class="btn btn-sm btn-ghost" id="addHeader" disabled>+ Add</button>
+                </div>
+                <div id="headers" class="mt-2"></div>
+              </div>
             </div>
 
-            <div class="col-12 col-lg-6">
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="fw-bold">Headers</div>
-                <button class="btn btn-sm btn-ghost" id="addHeader">+ Add</button>
+            <!-- Body -->
+            <div class="mt-3">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="fw-bold">Request Body (JSON)</div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button id="beautifyBtn" class="btn btn-sm btn-ghost" disabled>Beautify</button>
+                  <button id="clearBodyBtn" class="btn btn-sm btn-ghost" disabled>Clear</button>
+                </div>
               </div>
-              <div id="headers" class="mt-2"></div>
+              <textarea id="body" class="form-control mt-2" rows="10" placeholder="{ }" disabled></textarea>
+              <div class="mk-muted mt-1" style="font-size:12px;">For GET/DELETE keep empty.</div>
             </div>
-          </div>
-
-          <!-- Body -->
-          <div class="mt-3">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <div class="fw-bold">JSON Body</div>
-              <div class="d-flex gap-2">
-                <button id="beautifyBtn" class="btn btn-sm btn-ghost">Beautify</button>
-                <button id="clearBodyBtn" class="btn btn-sm btn-ghost">Clear</button>
-              </div>
-            </div>
-            <textarea id="body" class="form-control mt-2" rows="10" placeholder="{ }"></textarea>
-            <div class="mk-muted mt-1" style="font-size:12px;">For GET/DELETE you can keep this empty.</div>
           </div>
 
           <!-- Curl -->
@@ -322,15 +443,16 @@
             <pre class="mt-2"><code id="curlOut"></code></pre>
           </div>
 
-          <!-- Response -->
+          <!-- Response (Swagger-ish) -->
           <div class="mt-3">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <div class="fw-bold">Response</div>
+              <div class="fw-bold">Server Response</div>
               <div class="d-flex align-items-center gap-2 flex-wrap">
                 <span id="statusBadge" class="mk-pill">Status: —</span>
                 <span id="timeBadge" class="mk-pill">Time: —</span>
                 <button id="copyRespBtn" class="btn btn-sm btn-ghost" disabled>Copy Body</button>
                 <button id="toggleHeadersBtn" class="btn btn-sm btn-ghost" disabled>Show Headers</button>
+                <button id="clearRespBtn" class="btn btn-sm btn-ghost">Clear</button>
               </div>
             </div>
 
@@ -345,7 +467,7 @@
         </div>
 
         <div class="mk-muted mt-3" style="font-size:13px;">
-          If a request fails due to CORS, open this file via a local server (VS Code Live Server) or host it on Vercel/Netlify.
+          If a request fails due to CORS, open this HTML via a local server (VS Code Live Server) or host it on Vercel/Netlify.
         </div>
       </div>
     </div>
@@ -355,27 +477,27 @@
   <div class="offcanvas offcanvas-end mk-offcanvas" tabindex="-1" id="endpointsCanvas" aria-labelledby="endpointsCanvasLabel">
     <div class="offcanvas-header">
       <div>
-        <div class="fw-bold" id="endpointsCanvasLabel">Endpoints</div>
-        <div class="mk-muted" style="font-size:13px;">Tap to auto-fill method/path/body.</div>
+        <div class="fw-bold" id="endpointsCanvasLabel">API</div>
+        <div class="mk-muted" style="font-size:13px;">Search & pick operations.</div>
       </div>
       <button type="button" class="btn btn-ghost" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
     </div>
     <div class="offcanvas-body">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <div class="fw-bold">List</div>
+      <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+        <input id="endpointSearchMobile" class="form-control" placeholder="Search endpoints…" />
         <button id="clearHistoryMobile" class="btn btn-sm btn-ghost">Clear</button>
       </div>
 
-      <div id="endpointListMobile" class="list-group mk-list mb-3"></div>
+      <div id="endpointAccordionMobile" class="accordion mk-accordion"></div>
 
       <div class="mt-3">
         <div class="fw-bold mb-2">History</div>
-        <div id="historyListMobile" class="list-group mk-list"></div>
+        <div id="historyListMobile" class="d-grid gap-2"></div>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS (required for offcanvas) -->
+  <!-- Bootstrap JS (required for offcanvas/accordion) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
@@ -385,6 +507,7 @@
     const ENDPOINTS = [
       { group: "Health", name: "GET /", method: "GET", path: "/", template: null },
 
+      // Users
       { group: "Users", name: "GET /api/users", method: "GET", path: "/api/users", template: null },
       { group: "Users", name: "GET /api/users/:user_id", method: "GET", path: "/api/users/:user_id", template: null },
       { group: "Users", name: "POST /api/users", method: "POST", path: "/api/users", template: {
@@ -401,6 +524,7 @@
       }},
       { group: "Users", name: "DELETE /api/users/:user_id", method: "DELETE", path: "/api/users/:user_id", template: null },
 
+      // Meals
       { group: "Meals", name: "GET /api/meals", method: "GET", path: "/api/meals", template: null },
       { group: "Meals", name: "GET /api/meals/:id", method: "GET", path: "/api/meals/:id", template: null },
       { group: "Meals", name: "POST /api/meals", method: "POST", path: "/api/meals", template: {
@@ -423,6 +547,7 @@
       }},
       { group: "Meals", name: "DELETE /api/meals/:id", method: "DELETE", path: "/api/meals/:id", template: null },
 
+      // Menu Items
       { group: "Menu Items", name: "GET /api/menu-items", method: "GET", path: "/api/menu-items", template: null },
       { group: "Menu Items", name: "GET /api/menu-items/:id", method: "GET", path: "/api/menu-items/:id", template: null },
       { group: "Menu Items", name: "POST /api/menu-items", method: "POST", path: "/api/menu-items", template: {
@@ -451,6 +576,7 @@
       }},
       { group: "Menu Items", name: "DELETE /api/menu-items/:id", method: "DELETE", path: "/api/menu-items/:id", template: null },
 
+      // App Orders
       { group: "App Orders", name: "GET /api/app-orders", method: "GET", path: "/api/app-orders", template: null },
       { group: "App Orders", name: "GET /api/app-orders/:id", method: "GET", path: "/api/app-orders/:id", template: null },
       { group: "App Orders", name: "POST /api/app-orders", method: "POST", path: "/api/app-orders", template: {
@@ -479,6 +605,7 @@
       }},
       { group: "App Orders", name: "DELETE /api/app-orders/:id", method: "DELETE", path: "/api/app-orders/:id", template: null },
 
+      // Order Items
       { group: "Order Items", name: "GET /api/app-order-items/:order_id", method: "GET", path: "/api/app-order-items/:order_id", template: null },
       { group: "Order Items", name: "POST /api/app-order-items", method: "POST", path: "/api/app-order-items", template: {
         order_id: 1,
@@ -493,6 +620,7 @@
       }},
       { group: "Order Items", name: "DELETE /api/app-order-items/:id", method: "DELETE", path: "/api/app-order-items/:id", template: null },
 
+      // Order Actions
       { group: "Order Actions", name: "GET /api/app-order-actions/:order_id", method: "GET", path: "/api/app-order-actions/:order_id", template: null },
       { group: "Order Actions", name: "POST /api/app-order-actions", method: "POST", path: "/api/app-order-actions", template: {
         order_id: 1,
@@ -507,6 +635,7 @@
       }},
       { group: "Order Actions", name: "DELETE /api/app-order-actions/:id", method: "DELETE", path: "/api/app-order-actions/:id", template: null },
 
+      // Sustainability Tags
       { group: "Sustainability", name: "GET /api/sustainability-tags", method: "GET", path: "/api/sustainability-tags", template: null },
       { group: "Sustainability", name: "GET /api/sustainability-tags/:id", method: "GET", path: "/api/sustainability-tags/:id", template: null },
       { group: "Sustainability", name: "POST /api/sustainability-tags", method: "POST", path: "/api/sustainability-tags", template: {
@@ -523,6 +652,7 @@
       }},
       { group: "Sustainability", name: "DELETE /api/sustainability-tags/:id", method: "DELETE", path: "/api/sustainability-tags/:id", template: null },
 
+      // Audit Log
       { group: "Audit", name: "GET /api/auditlog/:user_id", method: "GET", path: "/api/auditlog/:user_id", template: null },
       { group: "Audit", name: "POST /api/auditlog", method: "POST", path: "/api/auditlog", template: {
         user_id: "user_1",
@@ -535,6 +665,7 @@
       }},
       { group: "Audit", name: "DELETE /api/auditlog/:audit_id", method: "DELETE", path: "/api/auditlog/:audit_id", template: null },
 
+      // Login attempts
       { group: "Login", name: "GET /api/login/:user_id", method: "GET", path: "/api/login/:user_id", template: null },
       { group: "Login", name: "POST /api/login", method: "POST", path: "/api/login", template: {
         user_id: "user_1",
@@ -553,7 +684,7 @@
     ];
 
     // -------------------------------
-    // State + helpers
+    // Elements
     // -------------------------------
     const els = {
       baseUrl: document.getElementById("baseUrl"),
@@ -561,16 +692,28 @@
       pingBtn: document.getElementById("pingBtn"),
       themeBtn: document.getElementById("themeBtn"),
 
-      // Desktop lists
-      endpointListDesk: document.getElementById("endpointListDesk"),
-      historyListDesk: document.getElementById("historyListDesk"),
-      clearHistoryDesk: document.getElementById("clearHistoryDesk"),
+      endpointAccordionDesk: document.getElementById("endpointAccordionDesk"),
+      endpointAccordionMobile: document.getElementById("endpointAccordionMobile"),
+      endpointSearchDesk: document.getElementById("endpointSearchDesk"),
+      endpointSearchMobile: document.getElementById("endpointSearchMobile"),
 
-      // Mobile lists
-      endpointListMobile: document.getElementById("endpointListMobile"),
+      historyListDesk: document.getElementById("historyListDesk"),
       historyListMobile: document.getElementById("historyListMobile"),
+      clearHistoryDesk: document.getElementById("clearHistoryDesk"),
       clearHistoryMobile: document.getElementById("clearHistoryMobile"),
 
+      // Operation header bits
+      opMethodBadge: document.getElementById("opMethodBadge"),
+      opPathText: document.getElementById("opPathText"),
+      opNameText: document.getElementById("opNameText"),
+      modePill: document.getElementById("modePill"),
+
+      tryBtn: document.getElementById("tryBtn"),
+      executeBtn: document.getElementById("executeBtn"),
+      abortBtn: document.getElementById("abortBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+
+      requestWrap: document.getElementById("requestWrap"),
       method: document.getElementById("method"),
       path: document.getElementById("path"),
       pathParams: document.getElementById("pathParams"),
@@ -583,9 +726,6 @@
       beautifyBtn: document.getElementById("beautifyBtn"),
       clearBodyBtn: document.getElementById("clearBodyBtn"),
 
-      sendBtn: document.getElementById("sendBtn"),
-      abortBtn: document.getElementById("abortBtn"),
-
       curlOut: document.getElementById("curlOut"),
       copyCurlBtn: document.getElementById("copyCurlBtn"),
 
@@ -596,24 +736,35 @@
       respHeaders: document.getElementById("respHeaders"),
       toggleHeadersBtn: document.getElementById("toggleHeadersBtn"),
       copyRespBtn: document.getElementById("copyRespBtn"),
+      clearRespBtn: document.getElementById("clearRespBtn"),
     };
 
     const LS = {
       baseUrl: "mk_api_tester_baseUrl",
       history: "mk_api_tester_history",
       lastReq: "mk_api_tester_lastReq",
-      theme: "mk_api_tester_theme"
+      theme: "mk_api_tester_theme",
+      tryMode: "mk_api_tester_tryMode",
+      activeEndpoint: "mk_api_tester_activeEndpoint",
     };
 
     let activeEndpointIndex = -1;
     let abortCtrl = null;
     let lastResponseBodyText = "";
+    let tryMode = false;
 
-    function safeJsonParse(s){
-      try { return JSON.parse(s); } catch { return null; }
-    }
-    function prettyJson(x){
-      try { return JSON.stringify(x, null, 2); } catch { return String(x); }
+    // -------------------------------
+    // Helpers
+    // -------------------------------
+    function safeJsonParse(s){ try { return JSON.parse(s); } catch { return null; } }
+    function prettyJson(x){ try { return JSON.stringify(x, null, 2); } catch { return String(x); } }
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
     function toast(msg){
@@ -643,6 +794,39 @@
     }
 
     // -------------------------------
+    // Swagger-like "Try it out" mode
+    // -------------------------------
+    function setTryMode(on){
+      tryMode = !!on;
+      localStorage.setItem(LS.tryMode, tryMode ? "1" : "0");
+
+      els.tryBtn.textContent = tryMode ? "Cancel" : "Try it out";
+      els.modePill.textContent = `Mode: ${tryMode ? "Try it out" : "Read-only"}`;
+
+      // Enable/disable inputs like Swagger
+      const dis = !tryMode;
+      els.method.disabled = dis;
+      els.path.disabled = dis;
+      els.addQuery.disabled = dis;
+      els.addHeader.disabled = dis;
+      els.body.disabled = dis;
+      els.beautifyBtn.disabled = dis;
+      els.clearBodyBtn.disabled = dis;
+
+      // Path params inputs
+      els.pathParams.querySelectorAll("input").forEach(i => i.disabled = dis);
+
+      // KV inputs
+      els.queryParams.querySelectorAll("input").forEach(i => i.disabled = dis);
+      els.headers.querySelectorAll("input").forEach(i => i.disabled = dis);
+      els.queryParams.querySelectorAll("button").forEach(b => b.disabled = dis);
+      els.headers.querySelectorAll("button").forEach(b => b.disabled = dis);
+
+      els.requestWrap.classList.toggle("mk-readonly", true);
+      updateCurl();
+    }
+
+    // -------------------------------
     // UI builders for key/value rows
     // -------------------------------
     function kvRow(key="", value="", onRemove){
@@ -654,9 +838,17 @@
         <button class="btn btn-ghost" type="button" style="width:44px;">✕</button>
       `;
       const [kEl, vEl, xEl] = row.children;
+
       xEl.addEventListener("click", () => { row.remove(); onRemove?.(); updateCurl(); });
       kEl.addEventListener("input", updateCurl);
       vEl.addEventListener("input", updateCurl);
+
+      // reflect tryMode
+      if(!tryMode){
+        kEl.disabled = true;
+        vEl.disabled = true;
+        xEl.disabled = true;
+      }
       return row;
     }
 
@@ -669,16 +861,13 @@
       `;
       const input = row.querySelector("input");
       input.addEventListener("input", updateCurl);
+      input.disabled = !tryMode;
       return row;
     }
 
-    function escapeHtml(s){
-      return String(s ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function setKvs(container, pairs){
+      container.innerHTML = "";
+      (pairs || []).forEach(([k,v]) => container.appendChild(kvRow(k,v)));
     }
 
     // -------------------------------
@@ -759,6 +948,7 @@
       const base = (els.baseUrl.value.trim() || "https://mk-be.vercel.app").replace(/\/+$/,"");
       const rawPath = applyPathParams(els.path.value.trim() || "/");
       const queryKvs = collectKv(els.queryParams);
+
       const url = new URL(base + rawPath);
       queryKvs.forEach(([k,v]) => url.searchParams.set(k, v));
       return url.toString();
@@ -786,12 +976,9 @@
     // -------------------------------
     // History
     // -------------------------------
-    function loadHistory(){
-      return safeJsonParse(localStorage.getItem(LS.history)) || [];
-    }
-    function saveHistory(items){
-      localStorage.setItem(LS.history, JSON.stringify(items.slice(0, 12)));
-    }
+    function loadHistory(){ return safeJsonParse(localStorage.getItem(LS.history)) || []; }
+    function saveHistory(items){ localStorage.setItem(LS.history, JSON.stringify(items.slice(0, 12))); }
+
     function addToHistory(entry){
       const items = loadHistory();
       items.unshift(entry);
@@ -808,29 +995,33 @@
           container.innerHTML = `<div class="mk-muted" style="font-size:13px;">No history yet.</div>`;
           return;
         }
-        items.forEach((h) => {
-          const a = document.createElement("button");
-          a.type = "button";
-          a.className = "list-group-item list-group-item-action";
-          a.innerHTML = `
-            <div class="d-flex align-items-center justify-content-between">
+
+        items.forEach(h => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn btn-ghost text-start";
+          btn.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between gap-2">
               <span class="mk-method ${h.method}">${h.method}</span>
               <span class="mk-muted" style="font-size:12px;">${new Date(h.ts).toLocaleString()}</span>
             </div>
-            <div class="mt-1" style="font-weight:900; font-size:13px;">${escapeHtml(h.path)}</div>
-            <div class="mk-muted" style="font-size:12px;">${escapeHtml(h.url)}</div>
+            <div class="mt-1" style="font-weight:950; font-size:13px;">${escapeHtml(h.path)}</div>
+            <div class="mk-muted" style="font-size:12px; word-break:break-all;">${escapeHtml(h.url)}</div>
           `;
-          a.addEventListener("click", () => {
+          btn.addEventListener("click", () => {
+            // load request (swagger style)
             els.method.value = h.method;
             els.path.value = h.path;
             setKvs(els.queryParams, h.query || []);
             setKvs(els.headers, h.headers || []);
             els.body.value = h.body || "";
             renderPathParams();
+            updateOpBarFromCurrent();
             updateCurl();
             toast("Loaded from history");
           });
-          container.appendChild(a);
+
+          container.appendChild(btn);
         });
       };
 
@@ -838,90 +1029,141 @@
       renderInto(els.historyListMobile);
     }
 
-    function setKvs(container, pairs){
-      container.innerHTML = "";
-      (pairs || []).forEach(([k,v]) => container.appendChild(kvRow(k,v)));
+    // -------------------------------
+    // Endpoint list (Swagger-ish accordion)
+    // -------------------------------
+    function groupEndpoints(filteredList){
+      const groups = {};
+      filteredList.forEach((e, idx) => {
+        const trueIdx = e.__idx;
+        if(!groups[e.group]) groups[e.group] = [];
+        groups[e.group].push({ ...e, idx:trueIdx });
+      });
+      return groups;
     }
 
-    // -------------------------------
-    // Endpoint list
-    // -------------------------------
-    function renderEndpoints(){
-      const groups = {};
-      ENDPOINTS.forEach((e, idx) => {
-        if(!groups[e.group]) groups[e.group] = [];
-        groups[e.group].push({ ...e, idx });
-      });
+    function endpointMatches(ep, q){
+      if(!q) return true;
+      const s = (ep.name + " " + ep.method + " " + ep.path + " " + ep.group).toLowerCase();
+      return s.includes(q.toLowerCase());
+    }
 
-      const renderInto = (container) => {
+    function renderEndpoints(searchText=""){
+      // add stable index
+      const withIdx = ENDPOINTS.map((e,i) => ({...e, __idx:i}));
+      const filtered = withIdx.filter(ep => endpointMatches(ep, searchText));
+      const groups = groupEndpoints(filtered);
+
+      const renderInto = (container, accordionId) => {
         container.innerHTML = "";
-        Object.keys(groups).forEach(groupName => {
-          const header = document.createElement("div");
-          header.className = "mt-2 mb-2";
-          header.innerHTML = `<div class="mk-muted" style="font-size:12px; font-weight:900; letter-spacing:.4px; text-transform:uppercase;">${escapeHtml(groupName)}</div>`;
-          container.appendChild(header);
+        const groupNames = Object.keys(groups);
+        if(groupNames.length === 0){
+          container.innerHTML = `<div class="mk-muted" style="font-size:13px;">No endpoints found.</div>`;
+          return;
+        }
 
-          groups[groupName].forEach(item => {
+        groupNames.forEach((groupName, gIdx) => {
+          const itemId = `${accordionId}-g-${gIdx}`;
+          const headerId = `${itemId}-h`;
+          const bodyId = `${itemId}-b`;
+
+          const accItem = document.createElement("div");
+          accItem.className = "accordion-item";
+
+          accItem.innerHTML = `
+            <h2 class="accordion-header" id="${headerId}">
+              <button class="accordion-button ${gIdx===0 ? "" : "collapsed"}" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#${bodyId}" aria-expanded="${gIdx===0 ? "true":"false"}"
+                      aria-controls="${bodyId}">
+                ${escapeHtml(groupName)}
+                <span class="mk-pill ms-2">${groups[groupName].length}</span>
+              </button>
+            </h2>
+            <div id="${bodyId}" class="accordion-collapse collapse ${gIdx===0 ? "show":""}"
+                 aria-labelledby="${headerId}" data-bs-parent="#${accordionId}">
+              <div class="accordion-body pt-2">
+                <div class="mk-muted" style="font-size:12px; margin-bottom:8px;">
+                  Click an operation to load it.
+                </div>
+                <div data-ops></div>
+              </div>
+            </div>
+          `;
+
+          const opsWrap = accItem.querySelector("[data-ops]");
+          groups[groupName].forEach(ep => {
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "list-group-item list-group-item-action";
-            btn.dataset.idx = item.idx;
-            btn.innerHTML = `
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="mk-method ${item.method}">${item.method}</span>
-                <span class="mk-muted" style="font-size:12px;">${escapeHtml(item.path)}</span>
-              </div>
-              <div class="mt-1" style="font-weight:900; font-size:13px;">${escapeHtml(item.name)}</div>
-            `;
-            btn.addEventListener("click", () => {
-              selectEndpoint(item.idx);
+            btn.className = "mk-endpoint-btn";
+            btn.dataset.idx = ep.idx;
 
-              // if mobile offcanvas open, close it
+            btn.innerHTML = `
+              <div class="d-flex align-items-center justify-content-between gap-2">
+                <span class="mk-method ${ep.method}">${ep.method}</span>
+                <span class="mk-muted" style="font-size:12px;">${escapeHtml(ep.path)}</span>
+              </div>
+              <div class="mt-1" style="font-weight:950; font-size:13px;">${escapeHtml(ep.name)}</div>
+            `;
+
+            btn.addEventListener("click", () => {
+              selectEndpoint(ep.idx);
+
+              // close mobile offcanvas if open
               const canvasEl = document.getElementById("endpointsCanvas");
               const inst = bootstrap.Offcanvas.getInstance(canvasEl);
               if(inst) inst.hide();
             });
 
-            container.appendChild(btn);
+            opsWrap.appendChild(btn);
           });
+
+          container.appendChild(accItem);
         });
+
+        setActiveEndpointStyle();
       };
 
-      renderInto(els.endpointListDesk);
-      renderInto(els.endpointListMobile);
-
-      setActiveEndpointStyle();
+      renderInto(els.endpointAccordionDesk, "endpointAccordionDesk");
+      renderInto(els.endpointAccordionMobile, "endpointAccordionMobile");
     }
 
     function setActiveEndpointStyle(){
-      const all = [
-        ...document.querySelectorAll("#endpointListDesk .list-group-item"),
-        ...document.querySelectorAll("#endpointListMobile .list-group-item"),
-      ];
-      all.forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(".mk-endpoint-btn").forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(`.mk-endpoint-btn[data-idx="${activeEndpointIndex}"]`).forEach(x => x.classList.add("active"));
+    }
 
-      const activeDesk = document.querySelector(`#endpointListDesk .list-group-item[data-idx="${activeEndpointIndex}"]`);
-      const activeMob  = document.querySelector(`#endpointListMobile .list-group-item[data-idx="${activeEndpointIndex}"]`);
-      if(activeDesk) activeDesk.classList.add("active");
-      if(activeMob) activeMob.classList.add("active");
+    function updateOpBarFromCurrent(){
+      const m = (els.method.value || "GET").trim();
+      const p = (els.path.value || "/").trim();
+      els.opMethodBadge.className = `mk-method ${m}`;
+      els.opMethodBadge.textContent = m;
+      els.opPathText.textContent = p;
     }
 
     function selectEndpoint(idx){
       const ep = ENDPOINTS[idx];
       activeEndpointIndex = idx;
+      localStorage.setItem(LS.activeEndpoint, String(idx));
 
+      // Load into builder
       els.method.value = ep.method;
       els.path.value = ep.path;
 
+      // defaults like Swagger
       els.queryParams.innerHTML = "";
       setDefaultHeaders();
-
       els.body.value = ep.template ? prettyJson(ep.template) : "";
 
       renderPathParams();
       updateCurl();
+
+      // Update Operation header
+      els.opNameText.textContent = ep.name;
+      updateOpBarFromCurrent();
+
       setActiveEndpointStyle();
 
+      // Save last draft
       localStorage.setItem(LS.lastReq, JSON.stringify({
         method: els.method.value,
         path: els.path.value,
@@ -929,22 +1171,33 @@
         headers: collectKv(els.headers),
         body: els.body.value
       }));
+
+      // default to read-only until Try it out
+      setTryMode(false);
     }
 
     // -------------------------------
-    // Sending request
+    // Sending request (Swagger: Execute)
     // -------------------------------
     async function sendRequest(){
+      if(!tryMode){
+        toast("Click “Try it out” first");
+        return;
+      }
+
       const method = els.method.value.trim();
       const url = buildFinalUrl();
 
+      // headers
       const headersArr = collectKv(els.headers);
       const headers = {};
       headersArr.forEach(([k,v]) => headers[k] = v);
 
+      // body
       const hasBody = (method === "POST" || method === "PUT");
       const bodyText = els.body.value.trim();
 
+      // validate JSON if body present
       if(hasBody && bodyText){
         const parsed = safeJsonParse(bodyText);
         if(parsed === null){
@@ -953,7 +1206,8 @@
         }
       }
 
-      els.sendBtn.disabled = true;
+      // UI state
+      els.executeBtn.disabled = true;
       els.abortBtn.disabled = false;
       els.toggleHeadersBtn.disabled = true;
       els.copyRespBtn.disabled = true;
@@ -966,12 +1220,11 @@
       abortCtrl = new AbortController();
 
       const start = performance.now();
-      let resp;
       let respText = "";
       let respHeadersObj = {};
 
       try{
-        resp = await fetch(url, {
+        const resp = await fetch(url, {
           method,
           headers,
           body: (hasBody && bodyText) ? bodyText : undefined,
@@ -983,10 +1236,12 @@
         els.timeBadge.textContent = `Time: ${(end - start).toFixed(0)} ms`;
         els.statusBadge.textContent = `Status: ${resp.status} ${resp.statusText}`;
 
+        // headers
         resp.headers.forEach((v,k) => respHeadersObj[k] = v);
         els.respHeaders.textContent = prettyJson(respHeadersObj);
         els.toggleHeadersBtn.disabled = false;
 
+        // body
         const ct = resp.headers.get("content-type") || "";
         if(ct.includes("application/json")){
           const j = await resp.json();
@@ -999,6 +1254,7 @@
         els.respBody.textContent = respText;
         els.copyRespBtn.disabled = false;
 
+        // history
         addToHistory({
           ts: Date.now(),
           method,
@@ -1010,7 +1266,7 @@
         });
 
       } finally {
-        els.sendBtn.disabled = false;
+        els.executeBtn.disabled = false;
         els.abortBtn.disabled = true;
         abortCtrl = null;
         updateCurl();
@@ -1023,7 +1279,7 @@
     els.saveBaseUrl.addEventListener("click", () => {
       const v = els.baseUrl.value.trim() || "https://mk-be.vercel.app";
       localStorage.setItem(LS.baseUrl, v);
-      toast("Base URL saved");
+      toast("Server saved");
       updateCurl();
     });
 
@@ -1042,36 +1298,90 @@
 
     els.themeBtn.addEventListener("click", toggleTheme);
 
-    els.method.addEventListener("change", updateCurl);
-    els.path.addEventListener("input", () => { renderPathParams(); updateCurl(); });
+    // Try it out / Execute
+    els.tryBtn.addEventListener("click", () => setTryMode(!tryMode));
+    els.executeBtn.addEventListener("click", async () => { try{ await sendRequest(); } catch(e){ console.error(e); } });
 
-    els.addQuery.addEventListener("click", () => { els.queryParams.appendChild(kvRow()); updateCurl(); });
-    els.addHeader.addEventListener("click", () => { els.headers.appendChild(kvRow()); updateCurl(); });
+    els.abortBtn.addEventListener("click", () => {
+      if(abortCtrl){
+        abortCtrl.abort();
+        toast("Request aborted");
+        els.executeBtn.disabled = false;
+        els.abortBtn.disabled = true;
+        els.respBody.textContent = "// aborted";
+      }
+    });
+
+    // Reset = revert selected endpoint defaults
+    els.resetBtn.addEventListener("click", () => {
+      if(activeEndpointIndex < 0){
+        toast("Select an endpoint first");
+        return;
+      }
+      const ep = ENDPOINTS[activeEndpointIndex];
+      els.method.value = ep.method;
+      els.path.value = ep.path;
+      els.queryParams.innerHTML = "";
+      setDefaultHeaders();
+      els.body.value = ep.template ? prettyJson(ep.template) : "";
+      renderPathParams();
+      updateOpBarFromCurrent();
+      updateCurl();
+      toast("Reset to default");
+    });
+
+    // Build UI events (only meaningful in Try mode, but safe)
+    els.method.addEventListener("change", () => { updateOpBarFromCurrent(); updateCurl(); });
+    els.path.addEventListener("input", () => { renderPathParams(); updateOpBarFromCurrent(); updateCurl(); });
+
+    els.addQuery.addEventListener("click", () => {
+      if(!tryMode) return;
+      els.queryParams.appendChild(kvRow());
+      updateCurl();
+    });
+    els.addHeader.addEventListener("click", () => {
+      if(!tryMode) return;
+      els.headers.appendChild(kvRow());
+      updateCurl();
+    });
 
     els.beautifyBtn.addEventListener("click", () => {
+      if(!tryMode) return;
       const parsed = safeJsonParse(els.body.value.trim());
       if(parsed === null){ toast("Body is not valid JSON"); return; }
       els.body.value = prettyJson(parsed);
       updateCurl();
     });
 
-    els.clearBodyBtn.addEventListener("click", () => { els.body.value = ""; updateCurl(); });
-
-    els.sendBtn.addEventListener("click", async () => {
-      try{ await sendRequest(); }
-      catch(e){ console.error(e); }
+    els.clearBodyBtn.addEventListener("click", () => {
+      if(!tryMode) return;
+      els.body.value = "";
+      updateCurl();
     });
 
-    els.abortBtn.addEventListener("click", () => {
-      if(abortCtrl){
-        abortCtrl.abort();
-        toast("Request aborted");
-        els.sendBtn.disabled = false;
-        els.abortBtn.disabled = true;
-        els.respBody.textContent = "// aborted";
+    // Search (desktop + mobile)
+    function wireSearch(inputEl){
+      let t = null;
+      inputEl.addEventListener("input", () => {
+        clearTimeout(t);
+        t = setTimeout(() => renderEndpoints(inputEl.value.trim()), 80);
+      });
+    }
+    wireSearch(els.endpointSearchDesk);
+    wireSearch(els.endpointSearchMobile);
+
+    // Keyboard: "/" to focus desktop search
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey){
+        // avoid when typing in an input
+        const tag = (document.activeElement && document.activeElement.tagName) || "";
+        if(tag === "INPUT" || tag === "TEXTAREA") return;
+        e.preventDefault();
+        (window.innerWidth >= 992 ? els.endpointSearchDesk : els.endpointSearchMobile).focus();
       }
     });
 
+    // Copy helpers
     els.copyCurlBtn.addEventListener("click", async () => {
       try{
         await navigator.clipboard.writeText(els.curlOut.textContent);
@@ -1083,8 +1393,7 @@
 
     els.toggleHeadersBtn.addEventListener("click", () => {
       els.respHeadersWrap.classList.toggle("d-none");
-      els.toggleHeadersBtn.textContent =
-        els.respHeadersWrap.classList.contains("d-none") ? "Show Headers" : "Hide Headers";
+      els.toggleHeadersBtn.textContent = els.respHeadersWrap.classList.contains("d-none") ? "Show Headers" : "Hide Headers";
     });
 
     els.copyRespBtn.addEventListener("click", async () => {
@@ -1096,6 +1405,19 @@
       }
     });
 
+    els.clearRespBtn.addEventListener("click", () => {
+      els.respHeadersWrap.classList.add("d-none");
+      els.respHeaders.textContent = "";
+      els.respBody.textContent = "// response will appear here";
+      els.statusBadge.textContent = "Status: —";
+      els.timeBadge.textContent = "Time: —";
+      els.toggleHeadersBtn.disabled = true;
+      els.copyRespBtn.disabled = true;
+      lastResponseBodyText = "";
+      toast("Response cleared");
+    });
+
+    // Clear history
     function clearHistory(){
       localStorage.removeItem(LS.history);
       renderHistory();
@@ -1109,14 +1431,13 @@
     // -------------------------------
     function init(){
       // Theme
-      const savedTheme = localStorage.getItem(LS.theme) || "dark";
-      applyTheme(savedTheme);
+      applyTheme(localStorage.getItem(LS.theme) || "dark");
 
       // Base URL
       els.baseUrl.value = localStorage.getItem(LS.baseUrl) || "https://mk-be.vercel.app";
 
-      // Lists
-      renderEndpoints();
+      // Render lists
+      renderEndpoints("");
       renderHistory();
 
       // Restore last request draft
@@ -1128,11 +1449,22 @@
         setKvs(els.headers, last.headers || []);
         els.body.value = last.body || "";
         renderPathParams();
+        updateOpBarFromCurrent();
         updateCurl();
       } else {
-        selectEndpoint(0);
+        // pick active endpoint if saved, otherwise first
+        const savedIdx = Number(localStorage.getItem(LS.activeEndpoint));
+        if(Number.isFinite(savedIdx) && savedIdx >= 0 && savedIdx < ENDPOINTS.length){
+          selectEndpoint(savedIdx);
+        }else{
+          selectEndpoint(0);
+        }
       }
+
+      // Start in read-only (Swagger behavior)
+      setTryMode((localStorage.getItem(LS.tryMode) || "0") === "1" ? false : false); // always read-only on load
     }
+
     init();
   </script>
 </body>
